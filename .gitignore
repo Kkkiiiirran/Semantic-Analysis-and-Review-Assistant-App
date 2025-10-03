@@ -1,0 +1,12 @@
+.env
+*.pkl
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+# Jupyter / IPython
+.ipynb_checkpoints/
+
+# System files
+.DS_Store
