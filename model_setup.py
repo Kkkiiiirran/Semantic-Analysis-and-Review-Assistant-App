@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
 from transformers import AutoTokenizer, AutoModel
 import torch
 import re
@@ -19,10 +20,12 @@ def preprocess(text):
     text = re.sub(r'\s+', ' ', text).strip()
     return text
 
+
 def load_bert_model():
     tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
     model = AutoModel.from_pretrained("distilbert-base-uncased")
     return tokenizer, model
+
 
 def get_bert_embedding(text, tokenizer, model):
     inputs = tokenizer(text, return_tensors='pt', truncation=True, padding=True, max_length=128)
@@ -32,7 +35,7 @@ def get_bert_embedding(text, tokenizer, model):
     return embeddings.squeeze().numpy()
 
 
-def train_and_save_model(csv_path, model_path="clf.pkl", embeddings_path="embeddings.pkl"):
+def train_and_save_model(csv_path, model_path="clf.pkl", embeddings_path="embeddings.pkl", test_data_path="test_data.pkl"):
     df = pd.read_csv(csv_path)
     if 'Review' not in df.columns or 'Category' not in df.columns:
         raise ValueError("CSV must contain 'Review' and 'Category' columns")
@@ -52,16 +55,27 @@ def train_and_save_model(csv_path, model_path="clf.pkl", embeddings_path="embedd
         print("Saved embeddings cache.")
 
     y = df['Category']
-    
+
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42, stratify=y
+    )
+
+
     clf = LogisticRegression(max_iter=1000)
-    clf.fit(X, y)
-    
-    # Save classifier
+    clf.fit(X_train, y_train)
+
+  
     with open(model_path, "wb") as f:
         pickle.dump(clf, f)
-    
-    return clf, tokenizer, model
+    print("Model saved to", model_path)
 
+
+    with open(test_data_path, "wb") as f:
+        pickle.dump((X_test, y_test), f)
+    print("Test data saved to", test_data_path)
+
+    return clf, tokenizer, model
 
 
 def load_model(model_path="clf.pkl"):
@@ -71,7 +85,6 @@ def load_model(model_path="clf.pkl"):
         clf = pickle.load(f)
     tokenizer, model = load_bert_model()
     return clf, tokenizer, model
-
 
 
 def predict_comment(text, clf, tokenizer, model):

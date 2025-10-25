@@ -2,13 +2,6 @@ import streamlit as st
 import pandas as pd
 from model_setup import train_and_save_model, load_model, predict_comment
 
-import os
-from dotenv import load_dotenv
-
-
-load_dotenv()
-
-api_key = os.environ.get("GOOGLE_API_KEY")
 from google import genai
 
 
@@ -22,7 +15,12 @@ def generate_positive_reply(review_text):
     Given the following customer review:
     '{review_text}'
     
-    Please generate a thoughtful and positive reply that acknowledges the customer's satisfaction and expresses gratitude.
+    Please review the response. Then, try to understand the context.
+    If its appreciation, support or constructive feedback, Please generate a thoughtful and positive reply that acknowledges the customer's satisfaction and expresses gratitude.
+    Keep it short and personal.
+
+    If its hate or spam or threat, repond with "we appreciate you took your time out to review. We request you to be mindful of how you convey your opinions."
+    
     It shall only include a reply and nothing else. Don't mention things like:
     "Here is a feedback"
     "This is how you could reply"..
@@ -78,7 +76,7 @@ if uploaded_file is not None:
         st.download_button("Download Predictions CSV", data=csv_exp, file_name="predictions_replies.csv", mime='text/csv')
 
 
-st.subheader("Predict Single Comment and Generate Positive Reply")
+st.subheader("Predict Single Comment and Generate Reply")
 text_input = st.text_area("Enter comment here:")
 
 if text_input:
