@@ -2,10 +2,16 @@ import streamlit as st
 import pandas as pd
 from model_setup import train_and_save_model, load_model, predict_comment
 
-import google.generativeai as genai
+import os
+from google import genai
+from dotenv import load_dotenv
 
 st.title("Semantic Analysis and Support Assistant")
 
+
+load_dotenv()
+
+api_key = os.environ.get("GOOGLE_API_KEY")
 
 client = genai.Client(api_key=api_key)
 
