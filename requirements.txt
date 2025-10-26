@@ -6,3 +6,4 @@ torch
 transformers
 nltk
 google-genai
+dotenv
