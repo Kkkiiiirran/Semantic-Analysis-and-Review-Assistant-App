@@ -3,7 +3,7 @@ import pandas as pd
 from model_setup import train_and_save_model, load_model, predict_comment
 
 import os
-from google.generativeai import genai
+from google import genai
 from dotenv import load_dotenv
 
 st.title("Semantic Analysis and Support Assistant")
