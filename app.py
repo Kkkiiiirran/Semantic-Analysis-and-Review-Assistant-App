@@ -2,8 +2,7 @@ import streamlit as st
 import pandas as pd
 from model_setup import train_and_save_model, load_model, predict_comment
 
-from google import genai
-
+import google.generativeai as genai
 
 st.title("Semantic Analysis and Support Assistant")
 
